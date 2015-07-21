@@ -1,22 +1,12 @@
-/**
- * @param districtCd
- * @return
- */
-private Long getCaseSupervisorForDistrict(Integer districtCd) {
-	Long caseSupervisorId = null;
-	List<AuthorizedUser> authorizedUserList = getNpacsService()
-			.getCPOOfficers(districtCd);
-	if (authorizedUserList.size() > 0) {
-		for (AuthorizedUser authorizedUser : authorizedUserList) {
-			caseSupervisorId = authorizedUser.getAuthorizedUserId();
-			break;
-		}
-	} else {
-		authorizedUserList = getNpacsService().getCDPOfficers(districtCd);
-		for (AuthorizedUser authorizedUser : authorizedUserList) {
-			caseSupervisorId = authorizedUser.getAuthorizedUserId();
-			break;
-		}
+// Moved method to NpacsService and made get*Officers() private
+@Override
+public Long getHeadChiefForDistrict(Integer districtCode) {
+
+	List<AuthorizedUser> officers = getCPOOfficers(districtCode);
+
+	if(isEmpty(officers)) {
+		officers = getCDPOfficers(districtCode);
 	}
-	return caseSupervisorId;
+
+	return isEmpty(officers) ? null : officers.get(0).getAuthorizedUserId();
 }
